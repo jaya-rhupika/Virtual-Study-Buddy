@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Study Sessions</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f2f3f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1 {
+            color: #0b7b9e;
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        select, button, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #dddace;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #a0e0dc; /* Light Teal */
+            color: #212121; /* Dark Gray */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0b7b9e; /* Medium Blue */
+            color: #ffffff;
+        }
+
+        .note-taking-section, .quote-section {
+            margin-top: 20px;
+        }
+
+        .note-taking-section h2, .quote-section h2 {
+            font-size: 24px;
+            color: #0b7b9e;
+        }
+
+        .note-taking-section textarea {
+            background-color: #e0f7fa; /* Light Cyan */
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+            min-height: 100px;
+            resize: vertical;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .quote-section p {
+            background-color: #fce4ec; /* Light Pink */
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Interactive Study Session</h1>
+
+        <div class="note-taking-section">
+            <h2>Note-Taking</h2>
+            <textarea id="note-text" placeholder="Write your notes here..."></textarea>
+            <button onclick="addBullet()">Add Bullet</button>
+            <button onclick="highlightText()">Bold Selected Text</button>
+            <button onclick="toggleTopic()">Toggle Topic/Subtopic</button>
+        </div>
+
+        <div class="quote-section">
+            <h2>Motivational Quote</h2><br>
+            <p id="motivational-quote">Click "Get Quote" for a motivational quote!</p>
+            <br><button id="get-quote">Get Quote</button>
+        </div>
+    </div>
+
+    <script>
+        // Motivational quotes
+        const motivationalQuotes = [
+            "Believe you can and you're halfway there.",
+            "The only way to do great work is to love what you do.",
+            "Success is not final, failure is not fatal: It is the courage to continue that counts.",
+            "Your limitation—it's only your imagination.",
+            "Push yourself, because no one else is going to do it for you.",
+            "Great things never come from comfort zones.",
+            "Dream it. Wish it. Do it.",
+            "Success doesn’t just find you. You have to go out and get it."
+        ];
+
+        function getRandomQuote() {
+            const randomIndex = Math.floor(Math.random() * motivationalQuotes.length);
+            return motivationalQuotes[randomIndex];
+        }
+
+        function updateQuote() {
+            document.getElementById('motivational-quote').textContent = getRandomQuote();
+        }
+
+        document.getElementById('get-quote').addEventListener('click', updateQuote);
+
+        // Automatically update the quote every 30 seconds
+        setInterval(updateQuote, 30000);
+
+        function addBullet() {
+            const textarea = document.getElementById('note-text');
+            textarea.value += '\n• ';
+            textarea.focus();
+        }
+
+        function highlightText() {
+            const textarea = document.getElementById('note-text');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            if (selectedText) {
+                textarea.value = textarea.value.substring(0, start) + '**' + selectedText + '**' + textarea.value.substring(end);
+                textarea.focus();
+                textarea.selectionStart = start;
+                textarea.selectionEnd = end + 4; // Adjust for added bold markers
+            }
+        }
+
+        function toggleTopic() {
+            const textarea = document.getElementById('note-text');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            if (selectedText) {
+                const prefix = selectedText.startsWith('• ') ? '' : '• ';
+                textarea.value = textarea.value.substring(0, start) + prefix + selectedText + textarea.value.substring(end);
+                textarea.focus();
+                textarea.selectionStart = start;
+                textarea.selectionEnd = end + prefix.length;
+            }
+        }
+
+        // Initialize with a random quote
+        updateQuote();
+    </script>
+</body>
+</html>

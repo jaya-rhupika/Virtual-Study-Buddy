@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Break, Focus Reminders, and Pomodoro Timer</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f2f3f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .section {
+            flex: 1;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #0b7b9e; /* Medium Blue */
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group input {
+            width: calc(100% - 24px);
+            padding: 12px;
+            border: 1px solid #dddace; /* Light Beige */
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .form-group button {
+            background-color: #a0e0dc; /* Light Teal */
+            color: #212121; /* Dark Gray */
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-group button:hover {
+            background-color: #0b7b9e; /* Medium Blue */
+            color: #ffffff;
+        }
+
+        .reminder-list, .pomodoro-timer {
+            margin-top: 20px;
+        }
+
+        .reminder-list button{
+            background-color: #a0e0dc; /* Light Teal */
+            color: #212121; /* Dark Gray */
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .reminder-item, .pomodoro-controls {
+            padding: 10px;
+            border: 1px solid #dddace; /* Light Beige */
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background-color: #e0f7fa; /* Light Cyan */
+        }
+
+        .pomodoro-timer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .timer-display {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .timer-controls button {
+            margin: 0 10px;
+            background-color: #a0e0dc; /* Light Teal */
+            color: #212121; /* Dark Gray */
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .timer-controls input {
+            padding: 8px;
+            width: 80px;
+            margin-bottom: 10px;
+            text-align: center;
+            border: 1px solid #dddace; /* Light Beige */
+            border-radius: 5px;
+        }
+
+        /* Popup Styles */
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 1000;
+        }
+
+        .popup h2 {
+            margin-bottom: 10px;
+        }
+
+        .popup button {
+            background-color: #a0e0dc; /* Light Teal */
+            color: #212121; /* Dark Gray */
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .popup button:hover {
+            background-color: #0b7b9e; /* Medium Blue */
+            color: #ffffff;
+        }
+    
+        .navbar {
+            background-color: #00447c; /* Dark Blue */
+            padding: 15px 20px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            justify-content: flex-start;
+            margin: 0;
+        }
+
+        .navbar ul li {
+            margin-right: 20px;
+        }
+
+        .navbar ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar ul li a:hover {
+            background-color: #0b7b9e; /* Medium Blue */
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="scheduling.html">Scheduling Sessions</a></li>
+            <li><a href="sessions.html">Interactive Study Sessions</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <!-- Break and Focus Reminders -->
+        <div class="section">
+            <h2>Break and Focus Reminders</h2><br>
+            <div class="form-group">
+                <input type="text" id="reminder-name" placeholder="Reminder Name" required><br><br>
+                <input type="time" id="reminder-time" placeholder="Reminder Time" required><br><br>
+                <button id="add-reminder">Add Reminder</button>
+            </div>
+            <div class="reminder-list" id="reminder-list">
+                <!-- Reminder items will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Pomodoro Timer -->
+        <div class="section">
+            <h2>Pomodoro Timer</h2>
+            <div class="pomodoro-timer">
+                <div class="timer-display" id="timer-display">25:00</div>
+                <div class="timer-controls">
+                    <input type="number" id="custom-timer" placeholder="Min" min="1" max="60">
+                 <button id="set-timer">Set Timer</button><br>
+                    <button id="start-timer">Start</button>
+                    <button id="pause-timer">Pause</button>
+                    <button id="reset-timer">Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup for Reminders -->
+    <div class="popup" id="reminder-popup">
+        <h2>Reminder Details</h2>
+        <p id="popup-content">Details about the reminder will be shown here.</p>
+        <button onclick="closePopup()">Close</button>
+    </div>
+
+    <script>
+        // Reminder JavaScript
+        function loadReminders() {
+            const reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+            const reminderList = document.getElementById('reminder-list');
+            reminderList.innerHTML = '';
+
+            reminders.forEach((reminder, index) => {
+                const reminderItem = document.createElement('div');
+                reminderItem.className = 'reminder-item';
+                reminderItem.innerHTML = `
+                    <strong>${reminder.name}</strong><br>
+                    Time: ${reminder.time}<br>
+                    <button onclick="showPopup('${reminder.name}', '${reminder.time}')">Details</button>
+                    <button onclick="deleteReminder(${index})">Delete</button>
+                `;
+                reminderList.appendChild(reminderItem);
+            });
+        }
+
+        document.getElementById('add-reminder').addEventListener('click', function() {
+            const name = document.getElementById('reminder-name').value;
+            const time = document.getElementById('reminder-time').value;
+            if (name.trim() === '' || time.trim() === '') return;
+
+            let reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+            reminders.push({ name, time });
+            localStorage.setItem('reminders', JSON.stringify(reminders));
+
+            document.getElementById('reminder-name').value = '';
+            document.getElementById('reminder-time').value = '';
+            loadReminders();
+        });
+
+        function deleteReminder(index) {
+            let reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+            reminders.splice(index, 1);
+            localStorage.setItem('reminders', JSON.stringify(reminders));
+            loadReminders();
+        }
+
+        function showPopup(name, time) {
+            const popup = document.getElementById('reminder-popup');
+            const content = document.getElementById('popup-content');
+            content.textContent = `Reminder: ${name}\nTime: ${time}`;
+            popup.style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('reminder-popup').style.display = 'none';
+        }
+
+        loadReminders();
+
+        // Pomodoro Timer JavaScript
+        let timerInterval;
+        let timeLeft = 25 * 60; // Default 25 minutes in seconds
+        let isPaused = true;
+
+        document.getElementById('set-timer').addEventListener('click', function() {
+            const customTime = parseInt(document.getElementById('custom-timer').value);
+            if (customTime && customTime >= 1 && customTime <= 60) {
+                timeLeft = customTime * 60;
+                updateTimerDisplay();
+            }
+        });
+
+        document.getElementById('start-timer').addEventListener('click', function() {
+            if (isPaused) {
+                isPaused = false;
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+        });
+
+        document.getElementById('pause-timer').addEventListener('click', function() {
+            isPaused = true;
+            clearInterval(timerInterval);
+        });
+
+        document.getElementById('reset-timer').addEventListener('click', function() {
+            isPaused = true;
+            clearInterval(timerInterval);
+            timeLeft = 25 * 60; // Reset to default 25 minutes
+            updateTimerDisplay();
+        });
+
+        function updateTimer() {
+            if (timeLeft > 0) {
+                timeLeft--;
+                updateTimerDisplay();
+            } else {
+                clearInterval(timerInterval);
+                alert('Time is up!');
+            }
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer-display').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+    </script>
+</body>
+</html>
